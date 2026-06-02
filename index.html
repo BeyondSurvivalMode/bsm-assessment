@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BSM Clarity Assessment | Beyond Survival Mode™</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest: #2D4A3E;
+    --forest-deep: #1a2e26;
+    --forest-light: #3d6355;
+    --gold: #C9A84C;
+    --gold-light: #e8c97a;
+    --cream: #F5F0E8;
+    --cream-dark: #ede6d6;
+    --white: #FEFCF8;
+    --text-dark: #1a1a18;
+    --text-mid: #4a4a42;
+    --text-light: #8a8a7a;
+    --radius: 2px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--forest-deep);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(201,168,76,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 90%, rgba(45,74,62,0.4) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 56px 0 48px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    margin-bottom: 48px;
+  }
+
+  .crown-mark {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+    filter: sepia(1) saturate(2) hue-rotate(10deg);
+  }
+
+  .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 6vw, 48px);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+
+  .header h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .header p {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: rgba(245,240,232,0.7);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    margin-bottom: 40px;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 400;
+  }
+
+  .progress-count {
+    font-size: 13px;
+    color: rgba(245,240,232,0.5);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+  }
+
+  .progress-bar {
+    height: 1px;
+    background: rgba(201,168,76,0.15);
+    position: relative;
+    overflow: visible;
+  }
+
+  .progress-fill {
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -3px;
+    top: -3px;
+    width: 7px;
+    height: 7px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(201,168,76,0.6);
+  }
+
+  /* Screens */
+  .screen { display: none; animation: fadeUp 0.5s ease forwards; }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Question card */
+  .q-pillar {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 300;
+    line-height: 1.35;
+    color: var(--cream);
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.12);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(201,168,76,0.06), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .option:hover { border-color: rgba(201,168,76,0.35); }
+  .option:hover::before { opacity: 1; }
+
+  .option.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .option.selected::before { opacity: 1; }
+
+  .option-marker {
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(201,168,76,0.4);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .option.selected .option-marker {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .option.selected .option-marker::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--forest-deep);
+    border-radius: 50%;
+  }
+
+  .option-text {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(245,240,232,0.85);
+  }
+
+  /* Nav buttons */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 36px;
+  }
+
+  .btn-back {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.4);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Jost', sans-serif;
+    transition: color 0.2s;
+    padding: 8px 0;
+  }
+
+  .btn-back:hover { color: rgba(245,240,232,0.7); }
+  .btn-back:disabled { opacity: 0; pointer-events: none; }
+
+  .btn-next {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--forest-deep);
+    background: var(--gold);
+    border: none;
+    cursor: pointer;
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+    padding: 14px 32px;
+    transition: all 0.2s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .btn-next.ready {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .btn-next.ready:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  /* Intake form */
+  .intake-intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(24px, 4vw, 34px);
+    font-weight: 300;
+    line-height: 1.3;
+    color: var(--cream);
+    margin-bottom: 12px;
+  }
+
+  .intake-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(245,240,232,0.6);
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .field input {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--cream);
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    padding: 14px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    border-radius: 0;
+    -webkit-appearance: none;
+  }
+
+  .field input::placeholder { color: rgba(245,240,232,0.25); }
+  .field input:focus { border-color: var(--gold); }
+
+  .consent {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    cursor: pointer;
+  }
+
+  .consent input[type="checkbox"] { display: none; }
+
+  .consent-box {
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(201,168,76,0.35);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .consent input:checked + .consent-box {
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  .consent input:checked + .consent-box::after {
+    content: '✓';
+    font-size: 10px;
+    color: var(--forest-deep);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .consent-text {
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(245,240,232,0.5);
+    line-height: 1.6;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 18px;
+    background: var(--gold);
+    color: var(--forest-deep);
+    border: none;
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .btn-submit.ready {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .btn-submit.ready:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-submit.loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* Results screen */
+  .result-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 6px 16px;
+    margin-bottom: 24px;
+  }
+
+  .result-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .result-pillar-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .result-divider {
+    width: 48px;
+    height: 1px;
+    background: var(--gold);
+    margin: 24px 0;
+  }
+
+  .result-description {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.85;
+    color: rgba(245,240,232,0.8);
+    margin-bottom: 32px;
+  }
+
+  .result-prescription {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-left: 3px solid var(--gold);
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .prescription-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .prescription-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--cream);
+  }
+
+  .all-pillars {
+    margin-bottom: 40px;
+  }
+
+  .pillars-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.4);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  .pillar-bars { display: flex; flex-direction: column; gap: 8px; }
+
+  .pillar-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pillar-bar-label {
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(245,240,232,0.6);
+    width: 130px;
+    flex-shrink: 0;
+  }
+
+  .pillar-bar-track {
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.07);
+    position: relative;
+  }
+
+  .pillar-bar-fill {
+    height: 2px;
+    background: var(--gold);
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+
+  .pillar-bar-fill.dominant { background: var(--gold-light); box-shadow: 0 0 6px rgba(201,168,76,0.4); }
+
+  .pillar-bar-score {
+    font-size: 11px;
+    color: rgba(245,240,232,0.4);
+    width: 24px;
+    text-align: right;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .result-cta {
+    text-align: center;
+    padding-top: 32px;
+    border-top: 1px solid rgba(201,168,76,0.15);
+  }
+
+  .result-cta p {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(245,240,232,0.6);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+
+  .btn-cta {
+    display: inline-block;
+    padding: 16px 40px;
+    background: var(--gold);
+    color: var(--forest-deep);
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .error-msg {
+    font-size: 12px;
+    color: #e87a6a;
+    margin-top: 12px;
+    text-align: center;
+    display: none;
+  }
+
+  /* Scripture closer */
+  .scripture {
+    text-align: center;
+    padding: 40px 0 0;
+  }
+
+  .scripture-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(245,240,232,0.4);
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+
+  .scripture-ref {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.4);
+  }
+
+  @media (max-width: 480px) {
+    .pillar-bar-label { width: 100px; font-size: 11px; }
+    .nav { flex-direction: column-reverse; gap: 12px; }
+    .btn-next, .btn-back { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <span class="crown-mark">🦋</span>
+    <div class="brand">Beyond Survival Mode™</div>
+    <h1>Your <em>Clarity</em><br>Assessment</h1>
+    <p>Answer honestly. There are no wrong answers — only the truth of where you are right now. That truth is where your reclamation begins.</p>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-meta">
+      <span class="progress-label">Your journey</span>
+      <span class="progress-count" id="progressCount">1 of 14</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width:7%"></div>
+    </div>
+  </div>
+
+  <!-- Q screens injected here -->
+  <div id="screens"></div>
+
+  <!-- Intake screen -->
+  <div class="screen" id="screen-intake">
+    <div class="intake-intro">Almost there,<br>sister.</div>
+    <p class="intake-sub">Your results are ready. Enter your name and email below — your personalized pillar prescription will be sent directly to you, along with your first step forward.</p>
+    <div class="field-group">
+      <div class="field">
+        <label for="firstName">First name</label>
+        <input type="text" id="firstName" placeholder="What do people who love you call you?" autocomplete="given-name">
+      </div>
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="Where should we send your prescription?" autocomplete="email">
+      </div>
+    </div>
+    <label class="consent">
+      <input type="checkbox" id="consentBox">
+      <span class="consent-box"></span>
+      <span class="consent-text">Yes — I give Beyond Survival Mode™ permission to send me my results and occasional encouragement. I know I can unsubscribe anytime.</span>
+    </label>
+    <button class="btn-submit" id="btnSubmit" onclick="handleSubmit()">Send my results →</button>
+    <div class="error-msg" id="errorMsg">Something went wrong. Please try again or email us directly.</div>
+  </div>
+
+  <!-- Results screen -->
+  <div class="screen" id="screen-results">
+    <div class="result-badge">Your BSM pillar profile</div>
+    <h2 class="result-title">Your deepest need right now is<br><span class="result-pillar-name" id="dominantPillarName">—</span></h2>
+    <div class="result-divider"></div>
+    <p class="result-description" id="dominantDesc"></p>
+    <div class="result-prescription">
+      <div class="prescription-label">Your first prescription</div>
+      <div class="prescription-text" id="prescriptionText"></div>
+    </div>
+    <div class="all-pillars">
+      <div class="pillars-label">Your full pillar profile</div>
+      <div class="pillar-bars" id="pillarBars"></div>
+    </div>
+    <div class="result-cta">
+      <p>Your results have been sent to your inbox. Your next step is already waiting for you — check your email within the next few minutes.</p>
+      <button class="btn-cta" onclick="window.open('https://payhip.com','_blank')">Claim your next step →</button>
+    </div>
+    <div class="scripture">
+      <p class="scripture-text">"Launch out into the deep and let down your nets for a catch."</p>
+      <p class="scripture-ref">Luke 5:4</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const MAILERLITE_API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiMjhkODA2MTViYWZlZWEyODFiNjViMzdiMmRhMGU5ZTI0ZThhNjQ5NDdhNmYyMmZmYTJlY2E0ZmI4N2Q5ZjlhNzc4YTI4MzQ2NDExYmFjZDciLCJpYXQiOjE3ODAzMzI4NDMuMzYwODUzLCJuYmYiOjE3ODAzMzI4NDMuMzYwODU2LCJleHAiOjQ5MzYwMDY0NDMuMzU1NDc3LCJzdWIiOiIyMjY4NDE2Iiwic2NvcGVzIjpbXX0.tx8GEOcJUu1_2d1HBgbzC1OZ8os0WMIKYg2PoxYH9ByMeBFImxcBmvyzbaSwyxW7JeZz1p9P2IiGlY_pWaYIzi52nxGl2Iidps2WY23mnBEZjmtCNzm1a32Z4u8VRQNF1zfZdiuWZz1OG9v4B7emmn2YFGPfnpIhfGBgo_Hr3L8kHrZhonQmzWD932uCFnGrPMp2sXEWqaZYMHLkC8kC-9q8KM3Q7iYyxTKNNLeqaBYOxzErjEZ_lHGdC2heYjECfunG6l4oonsGuGe3HnnEjjznCv6MbQ9jyIiiTorEebeUFlL2O3kQoExGvGXXkmAWA795wD8lUJUcLVUucRWnNf82x0PaozkrfMyqHk9g9t1TeTQh_IpETH5mfC-9mR18gvOqz_tdcwpTL5bFHqDLHFT3b_NgRBWr0IFpZ0yumtmT8oWYGtQuYydoBtGJvYDJpHyz67CYz54qnx_ReM17WkwH5bpunrqowXMzWJz0FknxjKeR5Ozgu9rDTobFRpRnS9ieFTWBDb8H-x2NB3gy6CZjh_PO-1hQxsrnZxfrbZzIISWLh2-xVMnGq19-Ok8IoJkS1EP-oUTXgAQXKF9_jfsxfn4glZbDsy2EoF93Ac13bNMtBML1WAQM3FnaVYFdia-66RNM2Yyp1luuavZ7l8NkHlRs3t6M7VrcW3I';
+
+// ── Pillars ──────────────────────────────────────────────
+const PILLARS = [
+  { id: 'identity',    name: 'Identity Reclamation',   short: 'Identity' },
+  { id: 'boundaries',  name: 'Boundaries & Voice',      short: 'Boundaries' },
+  { id: 'grief',       name: 'Grief & Deferred Dreams', short: 'Grief' },
+  { id: 'rest',        name: 'Rest & Restoration',      short: 'Rest' },
+  { id: 'provision',   name: 'Provision & Abundance',   short: 'Provision' },
+  { id: 'purpose',     name: 'Purpose & Calling',       short: 'Purpose' },
+  { id: 'community',   name: 'Safe Community',          short: 'Community' },
+];
+
+const PILLAR_DATA = {
+  identity: {
+    desc: "You have been so many things to so many people for so long that you've lost the thread back to yourself. Somewhere along the way, you stopped asking who you are — because survival didn't have time for that question. That question is the most sacred one. And it's time to ask it.",
+    prescription: "Your first step is the BSM Identity Map — a guided exercise to recover the parts of yourself that went underground during survival mode. Your email has everything you need to begin."
+  },
+  boundaries: {
+    desc: "You know how to give. You have been giving — your time, your peace, your yes — long past the point of empty. The cost of having no edges is that everything bleeds into everything. You are allowed to take up space. You are allowed to say no. We're going to practice that together.",
+    prescription: "Your first step is the BSM Boundaries Audit — a clarity tool to help you identify where your energy is leaking and what one boundary, set this week, would begin to change everything."
+  },
+  grief: {
+    desc: "There are versions of your life you laid down and never mourned. Dreams deferred so long they started to feel impossible. You kept moving because you had to — but grief doesn't disappear when you ignore it. It just goes underground and gets heavier. It's safe to set it down here.",
+    prescription: "Your first step is the BSM Grief & Release Guide — a faith-rooted process to help you name what you lost, honor it, and begin to believe again for what's ahead."
+  },
+  rest: {
+    desc: "Your nervous system has been in emergency mode for so long that rest feels irresponsible — like a luxury you haven't earned yet. That is the lie survival mode tells. Rest is not a reward. It is the ground everything else grows from. Your body knows this. We're going to help you trust it again.",
+    prescription: "Your first step is the BSM Reset Guide — a 7-day practice to begin reintroducing genuine rest into your life without guilt, without anxiety, and without losing the ground you've fought for."
+  },
+  provision: {
+    desc: "Survival taught you to hoard, to brace, to expect the floor to drop out at any moment. Abundance feels foreign — even dangerous. The woman you're becoming needs a different relationship with provision, one rooted in the truth of Luke 5: when you go deeper, the nets overflow.",
+    prescription: "Your first step is the BSM Abundance Shift — a Scripture-anchored reset to begin dismantling the scarcity mindset that survival mode installed and replacing it with the truth of what God says about your portion."
+  },
+  purpose: {
+    desc: "You have always known there was something more — a call, a contribution, a version of your life that felt like it actually fit you. Survival mode put it on hold. But postponed is not cancelled. The work you were made for is still waiting, and you are not too late.",
+    prescription: "Your first step is the BSM Purpose Activation — a guided discovery process to reconnect with what lights you up, clarify your unique contribution, and take one grounded step toward it this month."
+  },
+  community: {
+    desc: "You have likely been doing this alone for far too long. Maybe you learned that needing people was weakness, or that opening up cost too much. Safe community — people who witness your becoming without requiring you to perform — is not a nice-to-have. For you, right now, it is medicine.",
+    prescription: "Your first step is joining the BSM community — a circle of women at every stage of the reclamation journey. Your email has the link. You don't have to walk into the next season alone."
+  }
+};
+
+// ── Questions (2 per pillar = 14 total) ──────────────────
+const QUESTIONS = [
+  { pillar:'identity',   text:'When someone asks "who are you beyond your roles," what happens inside you?', options:['I go blank — I genuinely don\'t know anymore','I list what I do, not who I am','I feel a flicker of something, but I can\'t name it','I have a clear sense of who I am outside my roles'] },
+  { pillar:'boundaries', text:'How often do you say yes when every part of you wants to say no?', options:['Almost always — saying no feels dangerous','More often than not — guilt wins','Sometimes — I\'m getting better at it','Rarely — I protect my energy well'] },
+  { pillar:'grief',      text:'Is there a version of your life you gave up that you\'ve never really mourned?', options:['Yes — and I try not to think about it','Yes — and it comes up more than I\'d like','I\'ve processed some of it but not all','I feel at peace with the paths not taken'] },
+  { pillar:'rest',       text:'When you stop moving, what shows up?', options:['Dread — I feel guilty when I\'m not productive','Anxiety — my mind won\'t quiet down','Restlessness, but I\'m learning to sit with it','Peace — I know how to actually rest'] },
+  { pillar:'provision',  text:'What is your relationship with the idea that you are allowed to have more?', options:['I don\'t believe it — scarcity is all I know','I believe it in theory but can\'t feel it','I\'m starting to believe it but it\'s fragile','I walk in abundance and expect good things'] },
+  { pillar:'purpose',    text:'Do you feel like you\'re living the life you were actually made for?', options:['No — and I\'ve almost stopped hoping for it','Not yet, but I haven\'t given up','I\'m getting closer but something is still missing','Yes — I feel aligned with my calling'] },
+  { pillar:'community',  text:'Who in your life has seen the full picture of where you\'ve been and loved you anyway?', options:['No one — I carry this mostly alone','One person, maybe, but it\'s complicated','A small circle who really gets it','I have deep, safe community around me'] },
+  { pillar:'identity',   text:'If survival mode ended tomorrow, would you know who you are without it?', options:['Honestly, no — it\'s all I\'ve known for years','I\'m not sure — it\'s been so long','Parts of me would know, parts are lost','Yes — I know who I am beneath all of it'] },
+  { pillar:'boundaries', text:'How does it feel when someone is disappointed in you?', options:['Unbearable — I will do almost anything to fix it','Very hard — it stays with me for a long time','Uncomfortable, but I can tolerate it','I can hold their disappointment without losing myself'] },
+  { pillar:'grief',      text:'What do you do with pain you can\'t explain to anyone around you?', options:['I bury it and keep moving — no other choice','I sit with it alone, in the dark','I find small ways to acknowledge it','I process it — through prayer, journaling, community'] },
+  { pillar:'rest',       text:'When was the last time you did something purely because it restored you?', options:['I can\'t remember — it\'s been years','A while — life keeps getting in the way','Recently, but I had to fight the guilt','Regularly — I treat restoration as necessary'] },
+  { pillar:'provision',  text:'What runs through your mind when an unexpected expense hits?', options:['Panic — it confirms what I already feared','Stress — it takes a long time to settle','Concern, but I trust it will work out','Calm — I have systems and I trust provision'] },
+  { pillar:'purpose',    text:'Is there something God placed in you that survival mode put on hold?', options:['Yes — and I\'ve almost convinced myself it\'s too late','Yes — and I still think about it often','I think so, but I\'m not sure what it is anymore','Yes — and I\'m actively working toward it'] },
+  { pillar:'community',  text:'When you imagine a table of women who truly understand your journey, how far away does that feel?', options:['Impossibly far — I\'ve stopped looking for it','Far, but I still want it','Closer than it used to be — I\'m working toward it','I have it, or something close to it'] },
+];
+
+// score: index 0 = highest need (4pts), index 3 = lowest need (1pt)
+const SCORE_MAP = [4, 3, 2, 1];
+
+let answers = {}; // questionIndex → optionIndex
+let scores = {};  // pillarId → total score
+let dominantPillar = null;
+let currentQ = 0;
+let totalQ = QUESTIONS.length;
+
+// ── Build question screens ────────────────────────────────
+function buildScreens() {
+  const container = document.getElementById('screens');
+  QUESTIONS.forEach((q, i) => {
+    const pillarLabel = PILLARS.find(p => p.id === q.pillar).name;
+    const div = document.createElement('div');
+    div.className = 'screen' + (i === 0 ? ' active' : '');
+    div.id = 'screen-q-' + i;
+    div.innerHTML = `
+      <div class="q-pillar">${pillarLabel}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="options" id="opts-${i}">
+        ${q.options.map((o,oi) => `
+          <div class="option" id="opt-${i}-${oi}" onclick="selectOption(${i},${oi})">
+            <div class="option-marker"></div>
+            <div class="option-text">${o}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="nav">
+        <button class="btn-back" id="back-${i}" onclick="goBack(${i})" ${i===0?'disabled':''}>← Back</button>
+        <button class="btn-next" id="next-${i}" onclick="goNext(${i})">${i === totalQ-1 ? 'See my results →' : 'Continue →'}</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function selectOption(qIdx, optIdx) {
+  answers[qIdx] = optIdx;
+  document.querySelectorAll(`#opts-${qIdx} .option`).forEach(el => el.classList.remove('selected'));
+  document.getElementById(`opt-${qIdx}-${optIdx}`).classList.add('selected');
+  document.getElementById(`next-${qIdx}`).classList.add('ready');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function updateProgress(q) {
+  const wrap = document.getElementById('progressWrap');
+  wrap.style.display = 'block';
+  document.getElementById('progressCount').textContent = `${q+1} of ${totalQ}`;
+  document.getElementById('progressFill').style.width = ((q+1)/totalQ*100) + '%';
+}
+
+function goNext(qIdx) {
+  if (answers[qIdx] === undefined) return;
+  currentQ = qIdx + 1;
+  if (currentQ >= totalQ) {
+    calculateScores();
+    document.getElementById('progressWrap').style.display = 'none';
+    showScreen('screen-intake');
+    checkIntakeReady();
+  } else {
+    updateProgress(currentQ);
+    showScreen('screen-q-' + currentQ);
+  }
+}
+
+function goBack(qIdx) {
+  if (qIdx === 0) return;
+  currentQ = qIdx - 1;
+  updateProgress(currentQ);
+  showScreen('screen-q-' + currentQ);
+}
+
+function calculateScores() {
+  scores = {};
+  PILLARS.forEach(p => scores[p.id] = 0);
+  QUESTIONS.forEach((q, i) => {
+    if (answers[i] !== undefined) {
+      scores[q.pillar] = (scores[q.pillar] || 0) + SCORE_MAP[answers[i]];
+    }
+  });
+  // normalize to max possible (2 questions × 4 = 8 per pillar)
+  dominantPillar = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+}
+
+// ── Intake validation ─────────────────────────────────────
+function checkIntakeReady() {
+  const name = document.getElementById('firstName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const consent = document.getElementById('consentBox').checked;
+  const ready = name.length > 0 && email.includes('@') && consent;
+  document.getElementById('btnSubmit').classList.toggle('ready', ready);
+}
+
+['firstName','email'].forEach(id => {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById(id)?.addEventListener('input', checkIntakeReady);
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('consentBox').addEventListener('change', checkIntakeReady);
+});
+
+// ── MailerLite API call ───────────────────────────────────
+async function handleSubmit() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const email     = document.getElementById('email').value.trim();
+  const btn       = document.getElementById('btnSubmit');
+  const errorEl   = document.getElementById('errorMsg');
+
+  btn.classList.add('loading');
+  btn.textContent = 'Sending your results…';
+  errorEl.style.display = 'none';
+
+  // Build fields for MailerLite
+  const pillarObj = PILLARS.find(p => p.id === dominantPillar);
+
+  const payload = {
+    email: email,
+    fields: {
+      name: firstName,
+      last_name: '',
+      bsm_dominant_pillar: pillarObj.name,
+    },
+    groups: ['YOUR_MAILERLITE_GROUP_ID'],   // ← replace with your actual group ID
+    status: 'active',
+    resubscribe: true
+  };
+
+  try {
+    const res = await fetch('https://connect.mailerlite.com/api/subscribers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${MAILERLITE_API_KEY}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (res.ok || res.status === 200 || res.status === 201) {
+      showResults(firstName);
+    } else {
+      throw new Error(data.message || 'Unknown error');
+    }
+  } catch (err) {
+    console.error('MailerLite error:', err);
+    // Still show results — don't punish her for an API hiccup
+    showResults(firstName);
+    errorEl.textContent = 'Your results are shown below, but there was an issue saving your email. Please screenshot your results.';
+    errorEl.style.display = 'block';
+  }
+}
+
+// ── Render results ────────────────────────────────────────
+function showResults(firstName) {
+  const pillarObj = PILLARS.find(p => p.id === dominantPillar);
+  const data      = PILLAR_DATA[dominantPillar];
+
+  document.getElementById('dominantPillarName').textContent = pillarObj.name;
+  document.getElementById('dominantDesc').textContent       = data.desc;
+  document.getElementById('prescriptionText').textContent   = data.prescription;
+
+  // Pillar bars
+  const barsEl = document.getElementById('pillarBars');
+  const sorted = PILLARS.map(p => ({ ...p, score: scores[p.id] || 0 }))
+                         .sort((a,b) => b.score - a.score);
+  const maxScore = sorted[0].score || 1;
+
+  barsEl.innerHTML = sorted.map(p => `
+    <div class="pillar-bar-row">
+      <div class="pillar-bar-label">${p.short}</div>
+      <div class="pillar-bar-track">
+        <div class="pillar-bar-fill ${p.id === dominantPillar ? 'dominant' : ''}"
+             data-pct="${Math.round(p.score/maxScore*100)}"
+             style="width:0%"></div>
+      </div>
+      <div class="pillar-bar-score">${p.score}</div>
+    </div>
+  `).join('');
+
+  showScreen('screen-results');
+
+  // Animate bars after paint
+  setTimeout(() => {
+    document.querySelectorAll('.pillar-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.pct + '%';
+    });
+  }, 100);
+}
+
+// ── Init ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildScreens();
+  updateProgress(0);
+
+  document.getElementById('firstName').addEventListener('input', checkIntakeReady);
+  document.getElementById('email').addEventListener('input', checkIntakeReady);
+  document.getElementById('consentBox').addEventListener('change', checkIntakeReady);
+});
+</script>
+</body>
+</html>
