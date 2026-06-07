@@ -689,7 +689,7 @@
     </div>
     <div class="result-cta">
       <p>Your results have been sent to your inbox. Your next step is already waiting for you — check your email within the next few minutes.</p>
-      <button class="btn-cta" onclick="window.open('https://payhip.com/BeyondSurvivalMode')">Claim your next step →</button>
+      <button class="btn-cta" onclick="window.open('https://payhip.com','_blank')">Claim your next step →</button>
     </div>
     <div class="scripture">
       <p class="scripture-text">"Launch out into the deep and let down your nets for a catch."</p>
@@ -878,10 +878,13 @@ async function handleSubmit() {
   const errorEl   = document.getElementById('errorMsg');
 
   btn.classList.add('loading');
-  btn.textContent = 'Sending your results…';
+  btn.textContent = 'Sending your results...';
   errorEl.style.display = 'none';
 
-  // Build fields for MailerLite
+  // REPLACE THIS with your actual MailerLite Group ID
+  // Find it: MailerLite > Subscribers > Groups > click your group > copy number from URL
+  const MAILERLITE_GROUP_ID = 'YOUR_MAILERLITE_GROUP_ID';
+
   const pillarObj = PILLARS.find(p => p.id === dominantPillar);
 
   const payload = {
@@ -891,7 +894,7 @@ async function handleSubmit() {
       last_name: '',
       bsm_dominant_pillar: pillarObj.name,
     },
-    groups: ['189106958807073960'],   // ← replace with your actual group ID
+    groups: [MAILERLITE_GROUP_ID],
     status: 'active',
     resubscribe: true
   };
@@ -901,23 +904,36 @@ async function handleSubmit() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${MAILERLITE_API_KEY}`
+        'Authorization': 'Bearer ' + MAILERLITE_API_KEY
       },
       body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
+    let data;
+    try { data = await res.json(); } catch(e) { data = {}; }
 
-    if (res.ok || res.status === 200 || res.status === 201) {
+    console.log('MailerLite status:', res.status);
+    console.log('MailerLite response:', JSON.stringify(data));
+
+    if (res.status === 200 || res.status === 201) {
       showResults(firstName);
+    } else if (res.status === 422) {
+      console.error('MailerLite 422 - check Group ID and custom field setup:', JSON.stringify(data));
+      showResults(firstName);
+      errorEl.textContent = 'Results shown below. Email delivery issue - check that your Group ID is set and the bsm_dominant_pillar custom field exists in MailerLite. Open browser console (F12) for details.';
+      errorEl.style.display = 'block';
+    } else if (res.status === 401) {
+      console.error('MailerLite 401 - API key rejected');
+      showResults(firstName);
+      errorEl.textContent = 'Results shown below. API key was not accepted. Check that your MailerLite API key is correct and active.';
+      errorEl.style.display = 'block';
     } else {
-      throw new Error(data.message || 'Unknown error');
+      throw new Error((data && data.message) ? data.message : 'HTTP ' + res.status);
     }
   } catch (err) {
     console.error('MailerLite error:', err);
-    // Still show results — don't punish her for an API hiccup
     showResults(firstName);
-    errorEl.textContent = 'Your results are shown below, but there was an issue saving your email. Please screenshot your results.';
+    errorEl.textContent = 'Results shown below. Email delivery issue - open browser console (F12) to see the specific error.';
     errorEl.style.display = 'block';
   }
 }
